@@ -13,5 +13,5 @@ conda activate datalad_env
 export PATH="/om4/project/biobank/bin:$PATH"
 
 
-datalad run -m 'small scale move data' 'python3 get_data.py'  
+datalad run -m 'moving data to subject datasets' 'python3 get_data.py'  
 

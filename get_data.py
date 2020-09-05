@@ -52,7 +52,7 @@ def out_hook(wf,result,*args):
 if __name__=="__main__":
 
     # 
-    key="/om4/project/biobank/bl/k30805r41238.key"
+    key="/om4/project/biobank/ukb/inputs/data/34746/k30805r34746.key"
     data_path="/om4/project/biobank/all_bulk_files/all_data.json"
     ds_path="/om4/project/biobank/ukb/inputs/subjects"
     
@@ -63,7 +63,7 @@ if __name__=="__main__":
     
     # workflow
     wf1=pydra.Workflow(name="wf1", input_spec=["x","key","path"],key=key, path=ds_path)
-    wf1.split("x",x=data[:3])
+    wf1.split("x",x=data[3:])
     wf1.add(extract_info(name="get_data", dic= wf1.lzin.x))
     wf1.add(ukb_create_dataset(name="init_update", key_file=wf1.lzin.key, path=wf1.lzin.path, eid=wf1.get_data.lzout.eid, f_id=wf1.get_data.lzout.fid ))
     wf1.set_output([("out", wf1.init_update.lzout.out)])

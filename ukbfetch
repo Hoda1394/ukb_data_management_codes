@@ -46,6 +46,8 @@ if __name__ == "__main__":
        else:
            print(f"Found {filename}: moving")
            from shutil import copyfile, move
-           #copyfile(filename, os.path.basename(filename))
+           #copy file then remove the original
+           copyfile(filename, os.path.basename(filename))
+           os.remove(filename)
            #move(filename, os.getcwd())
-           move(filename, os.path.basename(filename))
+           #move(filename, os.path.basename(filename))
