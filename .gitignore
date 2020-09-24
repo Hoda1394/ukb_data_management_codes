@@ -4,3 +4,5 @@ pydra_mss_test.py
 pydra_task_hook_exp.py
 wf_tmp_dir
 __pycache__
+output.out
+pydra_split_large_test.py
