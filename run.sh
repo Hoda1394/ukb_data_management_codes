@@ -3,7 +3,7 @@
 #SBATCH -n 30
 #SBATCH -p gablab
 #SBATCH --mem=64G
-#SBATCH -o /om4/project/biobank/outputs/move_data-%j.out
+#SBATCH -o /om4/project/biobank/outputs/move_data-%j-.out
 
 set -e
 

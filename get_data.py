@@ -62,12 +62,23 @@ if __name__=="__main__":
 
     
     # workflow
-    wf1=pydra.Workflow(name="wf1", input_spec=["x","key","path"],key=key, path=ds_path)
-    wf1.split("x",x=data[3:6])
+    wf1=pydra.Workflow(
+        name="wf1",
+        input_spec=["x","key","path"],
+        key=key,
+        path=ds_path,
+        cache_dir="/om4/project/biobank/cache_dir/cache_files",
+        audit_flags=AuditFlag.PROV,
+        messengers=FileMessenger(),
+        )
+    wf1.split("x",x=data[6:])
     wf1.add(extract_info(name="get_data", dic= wf1.lzin.x))
     wf1.add(ukb_create_dataset(name="init_update", key_file=wf1.lzin.key, path=wf1.lzin.path, eid=wf1.get_data.lzout.eid, f_id=wf1.get_data.lzout.fid ))
     wf1.set_output([("out", wf1.init_update.lzout.out)])
     wf1.hooks.post_run_task=out_hook
+
+    message_path ="/om4/project/biobank/cache_dir/messages"
+    wf.audit.messenger_args=dict(message_dir=message_path)
 
 
     with pydra.Submitter(plugin="cf",n_procs=20) as sub:
