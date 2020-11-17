@@ -1,7 +1,9 @@
 import os
+import sys
 import subprocess as sp
 import json
 import pydra
+from pydra.utils.messenger import AuditFlag,FileMessenger
 import typing as ty
 
 @pydra.mark.task
@@ -27,7 +29,7 @@ def ukb_create_dataset(key_file,path,eid,f_id):
         init_cmd=["datalad","ukb-init","-d", dset_path, eid] + f_id
     
         #print("============ initializing eid-{} ============".format(eid))
-        p0=sp.run(["datalad","create","-d", dset_path], stdout=sp.PIPE, stderr=sp.STDOUT,text=True)
+        p0=sp.run(["datalad","create","-d",dset_path], stdout=sp.PIPE, stderr=sp.STDOUT,text=True)
         out.append(p0.stdout)
         #print(p0.stdout)
 
@@ -55,12 +57,21 @@ if __name__=="__main__":
     key="/om4/project/biobank/ukb/inputs/data/34746/k30805r34746.key"
     data_path="/om4/project/biobank/all_bulk_files/all_data.json"
     ds_path="/om4/project/biobank/ukb/inputs/subjects"
+    #ds_path="/om4/project/biobank/h_ukb/ukb/inputs"
     
-
     with open(data_path) as f:
        data = json.load(f) # list of all dictionaries
 
+    #
+    st=int(sys.argv[1]) # The start point in the list
+    n = 500 # Number of subject data to be moved in one task array
+    if st == (len(data)-127):
+        ed=len(data)
+    else:
+        ed=st+n   
+
     
+    message_path ="/om4/project/biobank/cache_dir/messages"
     # workflow
     wf1=pydra.Workflow(
         name="wf1",
@@ -70,15 +81,15 @@ if __name__=="__main__":
         cache_dir="/om4/project/biobank/cache_dir/cache_files",
         audit_flags=AuditFlag.PROV,
         messengers=FileMessenger(),
+        messenger_args=dict(message_dir=message_path)
         )
-    wf1.split("x",x=data[6:])
+    wf1.split("x",x=data[st:ed])
     wf1.add(extract_info(name="get_data", dic= wf1.lzin.x))
     wf1.add(ukb_create_dataset(name="init_update", key_file=wf1.lzin.key, path=wf1.lzin.path, eid=wf1.get_data.lzout.eid, f_id=wf1.get_data.lzout.fid ))
     wf1.set_output([("out", wf1.init_update.lzout.out)])
     wf1.hooks.post_run_task=out_hook
 
-    message_path ="/om4/project/biobank/cache_dir/messages"
-    wf.audit.messenger_args=dict(message_dir=message_path)
+    #wf1.audit.messenger_args=dict(message_dir=message_path)
 
 
     with pydra.Submitter(plugin="cf",n_procs=20) as sub:
