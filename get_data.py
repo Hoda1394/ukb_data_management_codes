@@ -64,8 +64,8 @@ if __name__=="__main__":
 
     #
     st=int(sys.argv[1]) # The start point in the list
-    n = 500 # Number of subject data to be moved in one task array
-    if st == (len(data)-127):
+    n = 2000 # Number of subject data to be moved in one task array
+    if st == (len(data)-627):
         ed=len(data)
     else:
         ed=st+n   
@@ -92,7 +92,7 @@ if __name__=="__main__":
     #wf1.audit.messenger_args=dict(message_dir=message_path)
 
 
-    with pydra.Submitter(plugin="cf",n_procs=20) as sub:
+    with pydra.Submitter(plugin="cf",n_procs=30) as sub:
         sub(wf1)
 
     #print(wf1.result())
