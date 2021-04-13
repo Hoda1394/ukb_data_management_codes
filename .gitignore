@@ -6,3 +6,4 @@ wf_tmp_dir
 __pycache__
 output.out
 pydra_split_large_test.py
+all_data.json
